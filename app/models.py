@@ -1,16 +1,11 @@
 import datetime
 import peewee as pw
-
-
-sqlite_db = pw.SqliteDatabase('../app.db', pragmas={
-    'journal_mode': 'wal',
-    'cache_size': -1024 * 64}
-)
+from app import db
 
 
 class BaseModel(pw.Model):
     class Meta:
-        database = sqlite_db
+        database = db
 
 
 class VideoHistory(BaseModel):
