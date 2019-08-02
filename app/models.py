@@ -26,7 +26,7 @@ class VideoHistory(BaseModel):
         return vh_dict
 
     @classmethod
-    def similar(cls, url, qtd=10):
+    def similar(cls, url, qtd=10, func=sim.jaccard_distance):
         urls = cls.users_per_url()
         url_users = urls.get(url)
         if url_users is None:
@@ -37,7 +37,7 @@ class VideoHistory(BaseModel):
             for url, users in urls.items():
                 if url_users == users:
                     continue
-                score = sim.jaccard_distance(url_users, users)
+                score = func(url_users, users)
                 result.append({"url": url, "score": score})
             result = sorted(result, key=lambda i: i['score'], reverse=True)[:qtd]
         return result

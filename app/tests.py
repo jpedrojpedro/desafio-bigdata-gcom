@@ -1,4 +1,5 @@
 import unittest
+import similarity as sim
 from models import VideoHistory
 
 
@@ -31,6 +32,10 @@ class TestVideoHistory(unittest.TestCase):
     def test_similar_custom_amount(self):
         result = VideoHistory.similar('http://www.inf.puc-rio.br', 3)
         self.assertEqual(len(result), 3)
+
+    def test_similar_cosine_similarity(self):
+        with self.assertRaises(NotImplementedError):
+            VideoHistory.similar('http://www.inf.puc-rio.br', 5, sim.cosine_similarity())
 
     def test_users_per_url(self):
         result = VideoHistory.users_per_url()
