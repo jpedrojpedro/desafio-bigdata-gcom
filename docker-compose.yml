@@ -13,3 +13,11 @@ services:
       FLASK_APP: app.py
       FLASK_ENV: development
     command: python main.py
+  test:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./app:/var/app/
+    working_dir: /var/app
+    command: python tests.py

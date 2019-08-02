@@ -4,11 +4,12 @@ setup:
 	@echo 'Instalando dependências da API'
 	@echo 'Flask + SQLite3'
 	cd app && docker-compose build api
+	cd app && docker-compose build test
 	@echo 'Setup finalizado'
 
 test:
 	@echo 'Executando testes'
-	@echo 'Implementar...'
+	cd app && docker-compose up test
 
 run:
 	@echo 'Iniciando aplicação'
