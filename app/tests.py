@@ -1,21 +1,21 @@
-import requests
-import random
-import models
-from bs4 import BeautifulSoup
-from urllib.parse import urlparse
+import unittest
+
+
+class TestStringMethods(unittest.TestCase):
+    def test_upper(self):
+        self.assertEqual('foo'.upper(), 'FOO')
+
+    def test_isupper(self):
+        self.assertTrue('FOO'.isupper())
+        self.assertFalse('Foo'.isupper())
+
+    def test_split(self):
+        s = 'hello world'
+        self.assertEqual(s.split(), ['hello', 'world'])
+        # check that s.split fails when the separator is not a string
+        with self.assertRaises(TypeError):
+            s.split(2)
 
 
 if __name__ == '__main__':
-    models.VideoHistory.delete_all()
-    page = requests.get('http://globo.com')
-    soup = BeautifulSoup(page.text, features='html.parser')
-    tags = soup.findAll('a')
-    for i in range(1000):
-        link = tags[random.randint(0, len(tags) - 1)]['href']
-        url = urlparse(link)
-        if url.scheme == '':
-            continue
-        vh = models.VideoHistory()
-        vh.user = "user_{}".format(random.randint(1, 50))
-        vh.url = link
-        vh.save()
+    unittest.main()
