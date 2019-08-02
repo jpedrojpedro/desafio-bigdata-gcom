@@ -16,7 +16,7 @@ def view(url):
 @app.route("/<path:url>/similar/", methods=['GET'])
 def similar(url):
     __url_params(url)
-    return jsonify(VideoHistory.similar())
+    return jsonify(VideoHistory.similar(url))
 
 
 @app.route("/", methods=['DELETE'])

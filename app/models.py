@@ -1,4 +1,5 @@
 import datetime
+import random
 import peewee as pw
 from app import db
 from playhouse.shortcuts import model_to_dict
@@ -23,30 +24,32 @@ class VideoHistory(BaseModel):
         vh_dict['dt_viewed'] = str(vh_dict['dt_viewed'])
         return vh_dict
 
-    # TODO: implementar metodo similar
     @classmethod
-    def similar(cls):
-        examples = [
-            {
-                "url": "g1.globo.com/educacao/enem/noticia/2019/04/02/inep-diz-que-enem-2019-nao-sofrera-alteracao-apos-grafica-declarar-falencia.ghtml",
-                "score": 0.9
-            }, {
-                "url": "www.globoplay.com/v/12758494",
-                "score": 0.85
-            }, {
-                "url": "g1.globo.com/pop-arte/musica/blog/mauro-ferreira/post/2019/04/02/los-hermanos-experimenta-leveza-na-primeira-musica-inedita-da-banda-em-14-anos.ghtml",
-                "score": 0.8
-            }, {
-                "url": "globoesporte.globo.com/blogs/blog-do-rodrigo-capelo/post/2019/04/02/o-flamengo-nao-investiu-mais-de-r-100-milhoes-em-jogadores-por-acaso-eis-os-numeros-de-2018.ghtml",
-                "score": 0.5
-            }
-        ]
-        return examples
+    def similar(cls, url, qtd=5):
+        urls = cls.users_per_url()
+        reference = urls.get(url)
+        if reference is None:
+            r1 = random.sample(urls.keys(), qtd)
+            result = [{"url": r, "score": 0.0} for r in r1]
+        else:
+            result = []
+        return result
 
     @classmethod
     def delete_all(cls):
         cls.truncate_table(restart_identity=True)
         return {}
+
+    @classmethod
+    def users_per_url(cls):
+        video_query = cls.select(
+            cls.url,
+            pw.fn.group_concat(cls.user).alias('users')
+        ).group_by(cls.url)
+        result = {}
+        for video in video_query:
+            result[video.url] = video.users.split(',')
+        return result
 
     class Meta:
         table_name = 'video_history'
