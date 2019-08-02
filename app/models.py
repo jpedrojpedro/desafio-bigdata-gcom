@@ -1,5 +1,6 @@
 import datetime
 import random
+import similarity as sim
 import peewee as pw
 from app import db
 from playhouse.shortcuts import model_to_dict
@@ -25,14 +26,20 @@ class VideoHistory(BaseModel):
         return vh_dict
 
     @classmethod
-    def similar(cls, url, qtd=5):
+    def similar(cls, url, qtd=10):
         urls = cls.users_per_url()
-        reference = urls.get(url)
-        if reference is None:
+        url_users = urls.get(url)
+        if url_users is None:
             r1 = random.sample(urls.keys(), qtd)
             result = [{"url": r, "score": 0.0} for r in r1]
         else:
             result = []
+            for url, users in urls.items():
+                if url_users == users:
+                    continue
+                score = sim.jaccard_distance(url_users, users)
+                result.append({"url": url, "score": score})
+            result = sorted(result, key=lambda i: i['score'], reverse=True)[:qtd]
         return result
 
     @classmethod
